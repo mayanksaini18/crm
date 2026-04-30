@@ -40,6 +40,10 @@ model Lead {
   agent      User?      @relation("AssignedAgent", fields: [assignedTo], references: [id])
   visits     Visit[]
   activities Activity[]
+
+  @@index([stage])
+  @@index([assignedTo])
+  @@index([deletedAt])
 }
 
 model Visit {

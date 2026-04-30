@@ -3,7 +3,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import bcrypt from 'bcryptjs'
 import path from 'path'
 
-const dbPath = path.resolve(__dirname, '..', 'prisma', 'dev.db')
+const dbPath = path.resolve(process.cwd(), 'prisma', 'dev.db')
 const adapter = new PrismaBetterSqlite3({ url: dbPath })
 const prisma = new PrismaClient({ adapter })
 
@@ -80,7 +80,7 @@ async function main() {
         ...ld,
         assignedTo: agent.id,
         moveInDate,
-        email: `${ld.name.toLowerCase().replace(' ', '.')}@example.com`,
+        email: `${ld.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
       },
     })
     leads.push(lead)
@@ -145,12 +145,25 @@ async function main() {
       },
     })
 
+    const activityType = visitStatuses[i] === 'COMPLETED' ? 'VISIT_COMPLETED'
+      : visitStatuses[i] === 'NO_SHOW' ? 'NOTE'
+      : visitStatuses[i] === 'CANCELLED' ? 'NOTE'
+      : 'VISIT_SCHEDULED'
+
+    const activityDesc = visitStatuses[i] === 'COMPLETED'
+      ? `Visit completed at ${properties[i % properties.length]}`
+      : visitStatuses[i] === 'NO_SHOW'
+      ? `Lead did not show up for visit at ${properties[i % properties.length]}`
+      : visitStatuses[i] === 'CANCELLED'
+      ? `Visit cancelled at ${properties[i % properties.length]}`
+      : `Visit scheduled at ${properties[i % properties.length]}`
+
     await prisma.activity.create({
       data: {
         leadId: lead.id,
         userId: agent.id,
-        type: 'VISIT_SCHEDULED',
-        description: `Visit scheduled at ${properties[i % properties.length]}`,
+        type: activityType,
+        description: activityDesc,
       },
     })
   }
