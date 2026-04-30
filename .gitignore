@@ -1,0 +1,22 @@
+# Worktrees
+.worktrees/
+
+# Next.js
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# Misc
+.DS_Store
+*.pem
