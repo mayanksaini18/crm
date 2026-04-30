@@ -13,6 +13,8 @@ export type PipelineStage =
 
 export type VisitStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW'
 
+export type ActivityType = 'NOTE' | 'CALL' | 'STAGE_CHANGE' | 'VISIT_SCHEDULED' | 'ASSIGNED' | 'EMAIL'
+
 export interface User {
   id: string
   name: string
@@ -51,6 +53,7 @@ export interface Visit {
   status: VisitStatus
   notes?: string | null
   createdAt: Date
+  updatedAt: Date
 }
 
 export interface Activity {
@@ -58,7 +61,7 @@ export interface Activity {
   leadId: string
   userId: string
   user?: User
-  type: string
+  type: ActivityType
   description: string
   createdAt: Date
 }
