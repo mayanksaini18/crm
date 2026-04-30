@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("AGENT")
+  createdAt DateTime @default(now())
+
+  leads      Lead[]     @relation("AssignedAgent")
+  visits     Visit[]
+  activities Activity[]
+}
+
+model Lead {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  source       String    @default("WEBSITE")
+  stage        String    @default("NEW")
+  budget       Int?
+  moveInDate   DateTime?
+  propertyType String?
+  location     String?
+  notes        String?
+  lostReason   String?
+  assignedTo   String?
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  agent      User?      @relation("AssignedAgent", fields: [assignedTo], references: [id])
+  visits     Visit[]
+  activities Activity[]
+}
+
+model Visit {
+  id          String   @id @default(cuid())
+  leadId      String
+  agentId     String
+  property    String
+  scheduledAt DateTime
+  status      String   @default("SCHEDULED")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lead  Lead @relation(fields: [leadId], references: [id])
+  agent User @relation(fields: [agentId], references: [id])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  leadId      String
+  userId      String
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
