@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import BetterSqlite3 from 'better-sqlite3'
-import { PrismaBetterSQLite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import path from 'path'
 
 const globalForPrisma = globalThis as unknown as {
@@ -12,8 +11,8 @@ function createPrismaClient() {
   const dbPath = databaseUrl.startsWith('file:')
     ? path.resolve(process.cwd(), databaseUrl.replace('file:./', '').replace('file:', ''))
     : databaseUrl
-  const sqlite = new BetterSqlite3(dbPath)
-  const adapter = new PrismaBetterSQLite3(sqlite)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` } as any)
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
